@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package models;
+import "google/api/annotations.proto";
+
+service AuthService {
+    rpc Authenticate(AuthRequest) returns (AuthResponse) {
+      option (google.api.http) = {
+        post: "/api/v1/auth"
+        body: "*"
+      };
+    }
+}
+
+message AuthRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message AuthResponse {
+    bool done = 1;
+}

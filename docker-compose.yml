@@ -1,0 +1,29 @@
+version: '2'
+services:
+  proxy:
+    build: './proxy'
+    volumes:
+      - ./proxy/envoy.json:/etc/envoy.json
+      - ./service/models/proto.pb:/etc/proto.pb
+    networks:
+      - envoymesh
+    ports:
+      - 8080:10000
+      - 9000:9000
+    expose:
+      - 8080
+      - 9000
+
+  svc:
+    build: './service'
+    networks:
+      envoymesh:
+        aliases:
+          - svc
+    ports:
+      - 50051:50051
+    expose:
+      - 50051
+
+networks:
+  envoymesh: {}
