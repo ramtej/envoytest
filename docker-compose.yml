@@ -5,6 +5,7 @@ services:
     volumes:
       - ./proxy/envoy.json:/etc/envoy.json
       - ./service/models/proto.pb:/etc/proto.pb
+      - ./hello-service/models/proto.pb:/etc/hello-service.pb
     networks:
       - envoymesh
     ports:
@@ -24,6 +25,17 @@ services:
       - 50051:50051
     expose:
       - 50051
+
+  hello-service:
+    build: './hello-service'
+    networks:
+      envoymesh:
+        aliases:
+          - hello-service
+    ports:
+      - 50052:50051
+    expose:
+      - 50052
 
 networks:
   envoymesh: {}

@@ -31,15 +31,14 @@
           "path": "/dev/null"
         }],
         "stat_prefix": "router",
-        "route_config":
-        {
+        "route_config": {
           "virtual_hosts": [
             {
               "name": "integration",
               "domains": [ "*" ],
               "routes": [
                 {
-                  "prefix": "/auth",
+                  "prefix": "/",
                   "cluster": "cluster_1"
                 }
               ]
@@ -56,6 +55,14 @@
               "services": ["models.AuthService"]
             }
           },
+          {
+            "type": "both",
+            "name": "grpc_json_transcoder",
+            "config": {
+              "proto_descriptor": "/etc/hello-service.pb",
+              "services": ["models.HelloService"]
+            }
+          }
           { "type": "decoder", "name": "router", "config": {} }
         ]
       }
@@ -76,6 +83,9 @@
       "hosts": [
         {
           "url": "tcp://svc:50051"
+        },
+        {
+          "url": "tcp://hello-svc:50051"
         }
       ]
     }]
