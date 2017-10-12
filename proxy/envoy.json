@@ -4,7 +4,7 @@
     "address": "tcp://0.0.0.0:10000",
     "filters": [
     {
-      "type": "read",
+      "type": "both",
       "name": "http_connection_manager",
       "config": {
         "codec_type": "http1",
