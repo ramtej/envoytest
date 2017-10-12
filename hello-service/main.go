@@ -18,8 +18,11 @@ const (
 type server struct{}
 
 // SayHello implements helloworld.GreeterServer
-func (s *server) Hello(ctx context.Context, in *pb.AuthRequest) (*pb.AuthResponse, error) {
-	return &pb.AuthResponse{Done: true}, nil
+func (s *server) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+	log.Println("test")
+	greeting := "Hello, " + in.Name
+	log.Println(greeting)
+	return &pb.HelloResponse{Greeting: greeting}, nil
 }
 
 func main() {
@@ -31,6 +34,7 @@ func main() {
 	pb.RegisterHelloServiceServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
+	log.Println("running on port:", port)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

@@ -62,7 +62,7 @@
               "proto_descriptor": "/etc/hello-service.pb",
               "services": ["models.HelloService"]
             }
-          }
+          },
           { "type": "decoder", "name": "router", "config": {} }
         ]
       }
@@ -85,7 +85,7 @@
           "url": "tcp://svc:50051"
         },
         {
-          "url": "tcp://hello-svc:50051"
+          "url": "tcp://hello-svc:50052"
         }
       ]
     }]
