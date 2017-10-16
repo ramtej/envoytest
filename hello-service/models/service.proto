@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 service HelloService {
     rpc Hello(HelloRequest) returns (HelloResponse) {
       option (google.api.http) = {
-        get: "/api/v1/hello"
+        get: "/api/v1/hello/{name}"
       };
     }
 }

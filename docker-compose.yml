@@ -4,8 +4,6 @@ services:
     build: './proxy'
     volumes:
       - ./proxy/envoy.json:/etc/envoy.json
-      - ./service/models/proto.pb:/etc/proto.pb
-      - ./hello-service/models/proto.pb:/etc/hello-service.pb
     networks:
       - envoymesh
     ports:

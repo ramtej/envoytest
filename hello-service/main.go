@@ -32,7 +32,6 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterHelloServiceServer(s, &server{})
-	// Register reflection service on gRPC server.
 	reflection.Register(s)
 	log.Println("running on port:", port)
 	if err := s.Serve(lis); err != nil {

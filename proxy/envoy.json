@@ -39,7 +39,11 @@
               "routes": [
                 {
                   "prefix": "/",
-                  "cluster": "cluster_1"
+                  "cluster": "service"
+                },
+                {
+                  "prefix": "/",
+                  "cluster": "hello-service"
                 }
               ]
             }
@@ -51,7 +55,7 @@
             "type": "both",
             "name": "grpc_json_transcoder",
             "config": {
-              "proto_descriptor": "/etc/proto.pb",
+              "proto_descriptor": "/etc/service.pb",
               "services": ["models.AuthService"]
             }
           },
@@ -74,20 +78,30 @@
 
   "cluster_manager": {
     "clusters": [
-    {
-      "name": "cluster_1",
-      "features": "http2",
-      "connect_timeout_ms": 5000,
-      "type": "strict_dns",
-      "lb_type": "round_robin",
-      "hosts": [
-        {
-          "url": "tcp://svc:50051"
-        },
-        {
-          "url": "tcp://hello-svc:50052"
-        }
-      ]
-    }]
+      {
+        "name": "service",
+        "features": "http2",
+        "connect_timeout_ms": 5000,
+        "type": "strict_dns",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://svc:50051"
+          }
+        ]
+      },
+      {
+        "name": "hello-service",
+        "features": "http2",
+        "connect_timeout_ms": 5000,
+        "type": "strict_dns",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://hello-service:50052"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -19,7 +19,13 @@ type server struct{}
 
 // SayHello implements helloworld.GreeterServer
 func (s *server) Authenticate(ctx context.Context, in *pb.AuthRequest) (*pb.AuthResponse, error) {
+	log.Println(in.Email)
 	return &pb.AuthResponse{Done: true}, nil
+}
+
+func (s *server) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	log.Println(in.Id)
+	return &pb.GetUserResponse{Id: in.Id, Name: "Ewan Valentine"}, nil
 }
 
 func main() {

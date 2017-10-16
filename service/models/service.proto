@@ -10,6 +10,12 @@ service AuthService {
         body: "*"
       };
     }
+
+    rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+      option (google.api.http) = {
+        get: "/api/v1/users/{id}"
+      };
+    }
 }
 
 message AuthRequest {
@@ -19,4 +25,14 @@ message AuthRequest {
 
 message AuthResponse {
     bool done = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  string id = 1;
+  string name = 2;
+  int32 age = 3;
 }
