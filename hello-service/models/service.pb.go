@@ -10,6 +10,8 @@ It is generated from these files:
 It has these top-level messages:
 	HelloRequest
 	HelloResponse
+	GreetingRequest
+	GreetingResponse
 */
 package models
 
@@ -66,9 +68,43 @@ func (m *HelloResponse) GetGreeting() string {
 	return ""
 }
 
+type GreetingRequest struct {
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+}
+
+func (m *GreetingRequest) Reset()                    { *m = GreetingRequest{} }
+func (m *GreetingRequest) String() string            { return proto.CompactTextString(m) }
+func (*GreetingRequest) ProtoMessage()               {}
+func (*GreetingRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *GreetingRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type GreetingResponse struct {
+	Greeting string `protobuf:"bytes,1,opt,name=greeting" json:"greeting,omitempty"`
+}
+
+func (m *GreetingResponse) Reset()                    { *m = GreetingResponse{} }
+func (m *GreetingResponse) String() string            { return proto.CompactTextString(m) }
+func (*GreetingResponse) ProtoMessage()               {}
+func (*GreetingResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *GreetingResponse) GetGreeting() string {
+	if m != nil {
+		return m.Greeting
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*HelloRequest)(nil), "models.HelloRequest")
 	proto.RegisterType((*HelloResponse)(nil), "models.HelloResponse")
+	proto.RegisterType((*GreetingRequest)(nil), "models.GreetingRequest")
+	proto.RegisterType((*GreetingResponse)(nil), "models.GreetingResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -83,6 +119,7 @@ const _ = grpc.SupportPackageIsVersion4
 
 type HelloServiceClient interface {
 	Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
+	GetGreeting(ctx context.Context, in *GreetingRequest, opts ...grpc.CallOption) (*GreetingResponse, error)
 }
 
 type helloServiceClient struct {
@@ -102,10 +139,20 @@ func (c *helloServiceClient) Hello(ctx context.Context, in *HelloRequest, opts .
 	return out, nil
 }
 
+func (c *helloServiceClient) GetGreeting(ctx context.Context, in *GreetingRequest, opts ...grpc.CallOption) (*GreetingResponse, error) {
+	out := new(GreetingResponse)
+	err := grpc.Invoke(ctx, "/models.HelloService/GetGreeting", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for HelloService service
 
 type HelloServiceServer interface {
 	Hello(context.Context, *HelloRequest) (*HelloResponse, error)
+	GetGreeting(context.Context, *GreetingRequest) (*GreetingResponse, error)
 }
 
 func RegisterHelloServiceServer(s *grpc.Server, srv HelloServiceServer) {
@@ -130,6 +177,24 @@ func _HelloService_Hello_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HelloService_GetGreeting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GreetingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HelloServiceServer).GetGreeting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/models.HelloService/GetGreeting",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HelloServiceServer).GetGreeting(ctx, req.(*GreetingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _HelloService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "models.HelloService",
 	HandlerType: (*HelloServiceServer)(nil),
@@ -137,6 +202,10 @@ var _HelloService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Hello",
 			Handler:    _HelloService_Hello_Handler,
+		},
+		{
+			MethodName: "GetGreeting",
+			Handler:    _HelloService_GetGreeting_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -146,7 +215,7 @@ var _HelloService_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("service.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 190 bytes of a gzipped FileDescriptorProto
+	// 243 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x2d, 0x4e, 0x2d, 0x2a,
 	0xcb, 0x4c, 0x4e, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb, 0xcd, 0x4f, 0x49, 0xcd,
 	0x29, 0x96, 0x92, 0x49, 0xcf, 0xcf, 0x4f, 0xcf, 0x49, 0xd5, 0x4f, 0x2c, 0xc8, 0xd4, 0x4f, 0xcc,
@@ -154,9 +223,13 @@ var fileDescriptor0 = []byte{
 	0x48, 0xcd, 0xc9, 0xc9, 0x0f, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x12, 0xe2, 0x62, 0xc9,
 	0x4b, 0xcc, 0x4d, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x02, 0xb3, 0x95, 0xb4, 0xb9, 0x78,
 	0xa1, 0x6a, 0x8a, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0x85, 0xa4, 0xb8, 0x38, 0xd2, 0x8b, 0x52, 0x53,
-	0x4b, 0x32, 0xf3, 0xd2, 0xa1, 0x0a, 0xe1, 0x7c, 0xa3, 0x24, 0xa8, 0x81, 0xc1, 0x10, 0xc7, 0x08,
-	0x05, 0x71, 0xb1, 0x82, 0xf9, 0x42, 0x22, 0x7a, 0x10, 0x07, 0xe9, 0x21, 0xdb, 0x27, 0x25, 0x8a,
-	0x26, 0x0a, 0xb1, 0x41, 0x49, 0xa6, 0xe9, 0xf2, 0x93, 0xc9, 0x4c, 0x62, 0x42, 0x22, 0x60, 0x67,
-	0x97, 0x19, 0xea, 0x67, 0x80, 0xa4, 0xf5, 0xab, 0x41, 0xee, 0xa9, 0x4d, 0x62, 0x03, 0xbb, 0xdd,
-	0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x24, 0x1c, 0x29, 0xb9, 0xf2, 0x00, 0x00, 0x00,
+	0x4b, 0x32, 0xf3, 0xd2, 0xa1, 0x0a, 0xe1, 0x7c, 0x25, 0x55, 0x2e, 0x7e, 0x77, 0x28, 0x1b, 0x9f,
+	0x99, 0x7a, 0x5c, 0x02, 0x08, 0x65, 0x84, 0x8d, 0x35, 0x3a, 0xca, 0x08, 0x75, 0x68, 0x30, 0xc4,
+	0x93, 0x42, 0x41, 0x5c, 0xac, 0x60, 0xbe, 0x90, 0x88, 0x1e, 0xc4, 0xa3, 0x7a, 0xc8, 0xfe, 0x90,
+	0x12, 0x45, 0x13, 0x85, 0x58, 0xa1, 0x24, 0xd3, 0x74, 0xf9, 0xc9, 0x64, 0x26, 0x31, 0x21, 0x11,
+	0x70, 0x70, 0x94, 0x19, 0xea, 0x67, 0x80, 0xa4, 0xf5, 0xab, 0x41, 0x6e, 0xaa, 0x15, 0x4a, 0xe4,
+	0xe2, 0x76, 0x4f, 0x2d, 0x81, 0xb9, 0x4b, 0x48, 0x1c, 0x66, 0x06, 0x9a, 0x87, 0xa4, 0x24, 0x30,
+	0x25, 0xa0, 0xe6, 0xcb, 0x83, 0xcd, 0x97, 0x14, 0x12, 0x87, 0x99, 0x0f, 0xf3, 0x00, 0xd4, 0x8a,
+	0x24, 0x36, 0x70, 0xb0, 0x1b, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x9e, 0x01, 0x27, 0xad, 0xad,
+	0x01, 0x00, 0x00,
 }

@@ -25,13 +25,17 @@ func (s *Server) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRespo
 	return &pb.HelloResponse{Greeting: greeting}, nil
 }
 
+func (s *Server) GetGreeting(ctx context.Context, in *pb.GreetingRequest) (*pb.GreetingResponse, error) {
+	greeting := "Hello, " + in.Name
+	log.Println(greeting)
+	return &pb.GreetingResponse{Greeting: greeting}, nil
+}
+
 func main() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-
-	log.Println(&Server{})
 
 	s := grpc.NewServer()
 	pb.RegisterHelloServiceServer(s, &Server{})

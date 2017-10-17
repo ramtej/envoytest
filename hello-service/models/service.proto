@@ -4,17 +4,31 @@ package models;
 import "google/api/annotations.proto";
 
 service HelloService {
-    rpc Hello(HelloRequest) returns (HelloResponse) {
-      option (google.api.http) = {
-        get: "/api/v1/hello/{name}"
-      };
-    }
+  rpc Hello(HelloRequest) returns (HelloResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/hello/{name}"
+    };
+  }
+
+  rpc GetGreeting(GreetingRequest) returns (GreetingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/greeting/{name}"
+    };
+  }
 }
 
 message HelloRequest {
-    string name = 1;
+  string name = 1;
 }
 
 message HelloResponse {
-    string greeting = 1;
+  string greeting = 1;
+}
+
+message GreetingRequest {
+  string name = 1;
+}
+
+message GreetingResponse {
+  string greeting = 1;
 }
