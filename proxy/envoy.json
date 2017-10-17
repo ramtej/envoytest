@@ -38,11 +38,11 @@
               "domains": [ "*" ],
               "routes": [
                 {
-                  "prefix": "/",
+                  "prefix": "",
                   "cluster": "service"
                 },
                 {
-                  "prefix": "/",
+                  "prefix": "",
                   "cluster": "hello-service"
                 }
               ]
@@ -86,7 +86,7 @@
         "lb_type": "round_robin",
         "hosts": [
           {
-            "url": "tcp://hello:50052"
+            "url": "tcp://hello_1:50052"
           }
         ]
       },
@@ -98,7 +98,7 @@
         "lb_type": "round_robin",
         "hosts": [
           {
-            "url": "tcp://service:50051"
+            "url": "tcp://service_1:50051"
           }
         ]
       }

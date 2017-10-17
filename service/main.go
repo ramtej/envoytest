@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/TabbDrinkLTD/envtest/service/models"
+	pb "github.com/ewanvalentine/envoytest/service/models"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -33,7 +33,6 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterAuthServiceServer(s, &server{})
-	// Register reflection service on gRPC server.
 	reflection.Register(s)
 
 	log.Println("Listening on port:", port)

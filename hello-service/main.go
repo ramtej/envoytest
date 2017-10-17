@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/TabbDrinkLTD/envtest/hello-service/models"
+	pb "github.com/ewanvalentine/envoytest/hello-service/models"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -15,10 +15,10 @@ const (
 )
 
 // server is used to implement helloworld.GreeterServer.
-type server struct{}
+type Server struct{}
 
 // SayHello implements helloworld.GreeterServer
-func (s *server) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+func (s *Server) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
 	log.Println("test")
 	greeting := "Hello, " + in.Name
 	log.Println(greeting)
@@ -31,8 +31,10 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	log.Println(&Server{})
+
 	s := grpc.NewServer()
-	pb.RegisterHelloServiceServer(s, &server{})
+	pb.RegisterHelloServiceServer(s, &Server{})
 	reflection.Register(s)
 
 	log.Println("running on port:", port)
