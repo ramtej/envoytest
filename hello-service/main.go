@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	port = ":50052"
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -30,10 +30,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
 	pb.RegisterHelloServiceServer(s, &server{})
 	reflection.Register(s)
+
 	log.Println("running on port:", port)
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

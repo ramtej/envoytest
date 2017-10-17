@@ -6,6 +6,9 @@ services:
       - ./proxy/envoy.json:/etc/envoy.json
     networks:
       - envoymesh
+    links:
+      - service
+      - hello
     ports:
       - 8080:10000
       - 9000:9000
@@ -13,25 +16,26 @@ services:
       - 8080
       - 9000
 
-  svc:
+  service:
     build: './service'
     networks:
       envoymesh:
         aliases:
-          - svc
+          - service
     ports:
-      - 50051:50051
+      - 50051
     expose:
       - 50051
 
-  hello-service:
+  hello:
+    container_name: hello
     build: './hello-service'
     networks:
       envoymesh:
         aliases:
-          - hello-service
+          - hello
     ports:
-      - 50052:50051
+      - 50052
     expose:
       - 50052
 

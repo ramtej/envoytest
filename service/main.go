@@ -14,10 +14,8 @@ const (
 	port = ":50051"
 )
 
-// server is used to implement helloworld.GreeterServer.
 type server struct{}
 
-// SayHello implements helloworld.GreeterServer
 func (s *server) Authenticate(ctx context.Context, in *pb.AuthRequest) (*pb.AuthResponse, error) {
 	log.Println(in.Email)
 	return &pb.AuthResponse{Done: true}, nil
@@ -37,6 +35,9 @@ func main() {
 	pb.RegisterAuthServiceServer(s, &server{})
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
+
+	log.Println("Listening on port:", port)
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
