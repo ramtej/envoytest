@@ -1,5 +1,14 @@
 version: '2'
 services:
+
+  consul:
+    image: consul
+    depends_on:
+      - service
+      - hello
+    ports:
+      - 8500:8500
+
   proxy:
     build: './proxy'
     volumes:

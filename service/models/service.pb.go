@@ -21,8 +21,9 @@ import math "math"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
 import (
+	client "github.com/micro/go-micro/client"
+	server "github.com/micro/go-micro/server"
 	context "golang.org/x/net/context"
-	grpc "google.golang.org/grpc"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -133,39 +134,48 @@ func init() {
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+var _ client.Option
+var _ server.Option
 
 // Client API for AuthService service
 
 type AuthServiceClient interface {
-	Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error)
-	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	Authenticate(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthResponse, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*GetUserResponse, error)
 }
 
 type authServiceClient struct {
-	cc *grpc.ClientConn
+	c           client.Client
+	serviceName string
 }
 
-func NewAuthServiceClient(cc *grpc.ClientConn) AuthServiceClient {
-	return &authServiceClient{cc}
+func NewAuthServiceClient(serviceName string, c client.Client) AuthServiceClient {
+	if c == nil {
+		c = client.NewClient()
+	}
+	if len(serviceName) == 0 {
+		serviceName = "models"
+	}
+	return &authServiceClient{
+		c:           c,
+		serviceName: serviceName,
+	}
 }
 
-func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthRequest, opts ...client.CallOption) (*AuthResponse, error) {
+	req := c.c.NewRequest(c.serviceName, "AuthService.Authenticate", in)
 	out := new(AuthResponse)
-	err := grpc.Invoke(ctx, "/models.AuthService/Authenticate", in, out, c.cc, opts...)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*GetUserResponse, error) {
+	req := c.c.NewRequest(c.serviceName, "AuthService.GetUser", in)
 	out := new(GetUserResponse)
-	err := grpc.Invoke(ctx, "/models.AuthService/GetUser", in, out, c.cc, opts...)
+	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -174,66 +184,25 @@ func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 
 // Server API for AuthService service
 
-type AuthServiceServer interface {
-	Authenticate(context.Context, *AuthRequest) (*AuthResponse, error)
-	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+type AuthServiceHandler interface {
+	Authenticate(context.Context, *AuthRequest, *AuthResponse) error
+	GetUser(context.Context, *GetUserRequest, *GetUserResponse) error
 }
 
-func RegisterAuthServiceServer(s *grpc.Server, srv AuthServiceServer) {
-	s.RegisterService(&_AuthService_serviceDesc, srv)
+func RegisterAuthServiceHandler(s server.Server, hdlr AuthServiceHandler, opts ...server.HandlerOption) {
+	s.Handle(s.NewHandler(&AuthService{hdlr}, opts...))
 }
 
-func _AuthService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).Authenticate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/models.AuthService/Authenticate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Authenticate(ctx, req.(*AuthRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+type AuthService struct {
+	AuthServiceHandler
 }
 
-func _AuthService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/models.AuthService/GetUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetUser(ctx, req.(*GetUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func (h *AuthService) Authenticate(ctx context.Context, in *AuthRequest, out *AuthResponse) error {
+	return h.AuthServiceHandler.Authenticate(ctx, in, out)
 }
 
-var _AuthService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "models.AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Authenticate",
-			Handler:    _AuthService_Authenticate_Handler,
-		},
-		{
-			MethodName: "GetUser",
-			Handler:    _AuthService_GetUser_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service.proto",
+func (h *AuthService) GetUser(ctx context.Context, in *GetUserRequest, out *GetUserResponse) error {
+	return h.AuthServiceHandler.GetUser(ctx, in, out)
 }
 
 func init() { proto.RegisterFile("service.proto", fileDescriptor0) }

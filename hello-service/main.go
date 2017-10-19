@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"net"
 
 	pb "github.com/ewanvalentine/envoytest/hello-service/models"
+	micro "github.com/micro/go-micro"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -18,32 +16,30 @@ const (
 type Server struct{}
 
 // SayHello implements helloworld.GreeterServer
-func (s *Server) Hello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) {
+func (s *Server) Hello(ctx context.Context, in *pb.HelloRequest, resp *pb.HelloResponse) error {
 	log.Println("test")
 	greeting := "Hello, " + in.Name
 	log.Println(greeting)
-	return &pb.HelloResponse{Greeting: greeting}, nil
+	resp.Greeting = greeting
+	return nil
 }
 
-func (s *Server) GetGreeting(ctx context.Context, in *pb.GreetingRequest) (*pb.GreetingResponse, error) {
+func (s *Server) GetGreeting(ctx context.Context, in *pb.GreetingRequest, resp *pb.GreetingResponse) error {
 	greeting := "Hello, " + in.Name
-	log.Println(greeting)
-	return &pb.GreetingResponse{Greeting: greeting}, nil
+	resp.Greeting = greeting
+	return nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	service := micro.NewService(
+		micro.Name("go.micro.srv.hello"),
+	)
 
-	s := grpc.NewServer()
-	pb.RegisterHelloServiceServer(s, &Server{})
-	reflection.Register(s)
+	service.Init()
+	pb.RegisterHelloServiceHandler(service.Server(), &Server{})
 
-	log.Println("running on port:", port)
-
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	// Run the server
+	if err := service.Run(); err != nil {
+		log.Println(err)
 	}
 }

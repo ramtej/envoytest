@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"net"
 
 	pb "github.com/ewanvalentine/envoytest/service/models"
+	micro "github.com/micro/go-micro"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -16,28 +14,29 @@ const (
 
 type server struct{}
 
-func (s *server) Authenticate(ctx context.Context, in *pb.AuthRequest) (*pb.AuthResponse, error) {
+func (s *server) Authenticate(ctx context.Context, in *pb.AuthRequest, resp *pb.AuthResponse) error {
 	log.Println(in.Email)
-	return &pb.AuthResponse{Done: true}, nil
+	resp.Done = true
+	return nil
 }
 
-func (s *server) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+func (s *server) GetUser(ctx context.Context, in *pb.GetUserRequest, resp *pb.GetUserResponse) error {
 	log.Println(in.Id)
-	return &pb.GetUserResponse{Id: in.Id, Name: "Ewan Valentine"}, nil
+	resp.Id = in.Id
+	resp.Name = "Ewan Valentine"
+	return nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	pb.RegisterAuthServiceServer(s, &server{})
-	reflection.Register(s)
+	service := micro.NewService(
+		micro.Name("go.micro.srv.service"),
+	)
 
-	log.Println("Listening on port:", port)
+	service.Init()
+	pb.RegisterAuthServiceHandler(service.Server(), &server{})
 
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	// Run the server
+	if err := service.Run(); err != nil {
+		log.Println(err)
 	}
 }
