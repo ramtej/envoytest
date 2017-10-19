@@ -10,7 +10,7 @@
         "codec_type": "http1",
         "access_log": [
         {
-          "path": "/dev/null",
+          "path": "/dev/stdout",
           "filter" : {
             "type": "logical_or",
             "filters": [
@@ -28,7 +28,7 @@
           }
         },
         {
-          "path": "/dev/null"
+          "path": "/dev/stdout"
         }],
         "stat_prefix": "router",
         "route_config": {
@@ -38,11 +38,11 @@
               "domains": [ "*" ],
               "routes": [
                 {
-                  "prefix": "",
+                  "prefix": "/models.AuthService/",
                   "cluster": "service"
                 },
                 {
-                  "prefix": "",
+                  "prefix": "/models.HelloService/",
                   "cluster": "hello-service"
                 }
               ]
@@ -55,16 +55,14 @@
             "type": "both",
             "name": "grpc_json_transcoder",
             "config": {
-              "proto_descriptor": "/etc/hello-service.pb",
-              "services": ["models.HelloService"]
-            }
-          },
-          {
-            "type": "both",
-            "name": "grpc_json_transcoder",
-            "config": {
-              "proto_descriptor": "/etc/service.pb",
-              "services": ["models.AuthService"]
+              "proto_descriptor": "/etc/defs.pb",
+              "services": ["models.AuthService", "models.HelloService"],
+              "print_options": {
+                "add_whitespace": false,
+                "always_print_primitive_fields": false,
+                "always_print_enums_as_ints": false,
+                "preserve_proto_field_names": false
+              }
             }
           },
           { "type": "decoder", "name": "router", "config": {} }
@@ -86,7 +84,7 @@
         "lb_type": "round_robin",
         "hosts": [
           {
-            "url": "tcp://hello_1:50052"
+            "url": "tcp://hello:50052"
           }
         ]
       },
@@ -98,7 +96,7 @@
         "lb_type": "round_robin",
         "hosts": [
           {
-            "url": "tcp://service_1:50051"
+            "url": "tcp://service:50051"
           }
         ]
       }

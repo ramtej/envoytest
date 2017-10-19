@@ -1,3 +1,4 @@
 FROM lyft/envoy:latest
 RUN apt-get update && apt-get -q install -y curl dnsutils
-CMD /usr/local/bin/envoy -c /etc/envoy.json --service-cluster front-proxy
+RUN touch /var/log/envoy.log
+CMD /usr/local/bin/envoy -l 1 -c /etc/envoy.json --service-cluster front-proxy

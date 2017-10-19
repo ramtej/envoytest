@@ -4,8 +4,7 @@ services:
     build: './proxy'
     volumes:
       - ./proxy/envoy.json:/etc/envoy.json
-      - ./hello-service/models/proto.pb:/etc/hello-service.pb
-      - ./service/models/proto.pb:/etc/service.pb
+      - ./proto.pb:/etc/defs.pb
     networks:
       - envoymesh
     depends_on:
@@ -22,6 +21,7 @@ services:
       - 9000
 
   service:
+    container_name: service
     build: './service'
     networks:
       envoymesh:
